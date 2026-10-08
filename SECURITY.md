@@ -20,11 +20,12 @@ Only the latest release gets security fixes while the SDK is below 1.0.
 - Run production with `zend.exception_ignore_args = On` (the default of `php.ini-production`), so stack traces hold no
   argument values at all. On PHP 8.2 and later the SDK marks the request as a sensitive parameter, so a trace leaves it
   out either way.
-- With your own PSR-18 client, its exceptions are your client's: many keep the request, with its `Authorization`
-  header, in `getRequest()`. The SDK passes such an exception on as the `previous` of its `TransportException`; do not
-  log `getRequest()` of it.
+- With your own PSR-18 client, its exceptions keep the request, `Authorization` header included, in `getRequest()`.
+  The SDK therefore does not pass such an exception on: its `TransportException` takes over only the message and the
+  class name. Your client's own logging is your client's.
 - The built-in curl transport follows no redirects and speaks only HTTP(S), so the key is never sent to another host or
-  over another protocol. Use the default `https://` base URL in production.
+  over another protocol. Ids are put in the path escaped, and an id of `.`, `..` or nothing is refused, so an id from
+  user input cannot point a call elsewhere; an Idempotency-Key must be printable ASCII, so it cannot add a header. Use the default `https://` base URL in production.
 - Webhook secrets (`whsec_…`) are only read by `WebhookVerifier`, which compares signatures in constant time and refuses
   a timestamp more than five minutes off. Always verify a delivery before acting on it, and verify the raw body.
 - The repository holds no keys. The contract tests and the examples read a test key from environment variables.

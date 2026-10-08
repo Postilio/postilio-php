@@ -18,7 +18,7 @@ final class FakeHttpClient implements ClientInterface
     /** @var list<string> */
     public array $bodies = [];
 
-    /** @var list<ResponseInterface|\Throwable> */
+    /** @var list<ResponseInterface|\Throwable|'network'> */
     private array $answers = [];
 
     /** @param array<string, string> $headers */
@@ -38,7 +38,9 @@ final class FakeHttpClient implements ClientInterface
 
     public function failNetwork(): self
     {
-        return $this->fail(new NetworkFailure('Connection refused'));
+        $this->answers[] = 'network';
+
+        return $this;
     }
 
     public function sendRequest(RequestInterface $request): ResponseInterface
@@ -46,6 +48,9 @@ final class FakeHttpClient implements ClientInterface
         $this->requests[] = $request;
         $this->bodies[] = (string) $request->getBody();
         $answer = array_shift($this->answers) ?? throw new \LogicException('No answer queued for ' . $request->getMethod() . ' ' . $request->getUri());
+        if ($answer === 'network') {
+            throw new NetworkFailure('Connection refused', $request);
+        }
         if ($answer instanceof \Throwable) {
             throw $answer;
         }

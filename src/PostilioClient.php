@@ -138,8 +138,9 @@ final class PostilioClient
      */
     public function sendEmail(SendEmailRequest $request, ?string $idempotencyKey = null): SendEmailResponse
     {
-        if ($idempotencyKey === '') {
-            throw new \InvalidArgumentException('An Idempotency-Key is 1 to 256 characters.');
+        // Printable ASCII only: a line break would end the header and start another one.
+        if ($idempotencyKey !== null && preg_match('/^[\x20-\x7E]{1,256}$/D', $idempotencyKey) !== 1) {
+            throw new \InvalidArgumentException('An Idempotency-Key is 1 to 256 printable ASCII characters.');
         }
 
         return $this->call('POST', '/v1/emails', $request->toArray(), SendEmailResponse::fromArray(...), $idempotencyKey ?? bin2hex(random_bytes(16)));
@@ -157,7 +158,7 @@ final class PostilioClient
     /** Gets a message and its timeline of events. Needs `emails:read`; a key finds only messages of its own mode. */
     public function getEmail(string $id): EmailDetails
     {
-        return $this->call('GET', '/v1/emails/' . rawurlencode($id), read: EmailDetails::fromArray(...));
+        return $this->call('GET', '/v1/emails/' . self::segment($id), read: EmailDetails::fromArray(...));
     }
 
     /**
@@ -166,7 +167,7 @@ final class PostilioClient
      */
     public function cancelEmail(string $id): void
     {
-        $this->call('DELETE', '/v1/emails/' . rawurlencode($id));
+        $this->call('DELETE', '/v1/emails/' . self::segment($id));
     }
 
     /** Adds a sending domain; the answer lists the DNS records to create. Needs `domains:manage`. */
@@ -184,13 +185,13 @@ final class PostilioClient
     /** Gets a sending domain with its records and DMARC check. Needs `domains:manage`. */
     public function getDomain(string $id): DomainResponse
     {
-        return $this->call('GET', '/v1/domains/' . rawurlencode($id), read: DomainResponse::fromArray(...));
+        return $this->call('GET', '/v1/domains/' . self::segment($id), read: DomainResponse::fromArray(...));
     }
 
     /** Removes a sending domain. Needs `domains:manage`. */
     public function deleteDomain(string $id): void
     {
-        $this->call('DELETE', '/v1/domains/' . rawurlencode($id));
+        $this->call('DELETE', '/v1/domains/' . self::segment($id));
     }
 
     /**
@@ -199,7 +200,7 @@ final class PostilioClient
      */
     public function checkDomain(string $id): DomainResponse
     {
-        return $this->call('POST', '/v1/domains/' . rawurlencode($id) . '/check', read: DomainResponse::fromArray(...));
+        return $this->call('POST', '/v1/domains/' . self::segment($id) . '/check', read: DomainResponse::fromArray(...));
     }
 
     /**
@@ -225,7 +226,7 @@ final class PostilioClient
     /** Takes an address off the suppression list; a complaint only with a reason. Needs `suppressions:manage`. */
     public function deleteSuppression(string $id, ?RemoveSuppressionRequest $request = null): void
     {
-        $this->call('DELETE', '/v1/suppressions/' . rawurlencode($id), $request?->toArray());
+        $this->call('DELETE', '/v1/suppressions/' . self::segment($id), $request?->toArray());
     }
 
     /** Lists the project's webhook endpoints. Needs `webhooks:manage`. */
@@ -243,31 +244,31 @@ final class PostilioClient
     /** Gets a webhook endpoint. Needs `webhooks:manage`. */
     public function getWebhookEndpoint(string $id): WebhookEndpointResponse
     {
-        return $this->call('GET', '/v1/webhooks/' . rawurlencode($id), read: WebhookEndpointResponse::fromArray(...));
+        return $this->call('GET', '/v1/webhooks/' . self::segment($id), read: WebhookEndpointResponse::fromArray(...));
     }
 
     /** Changes a webhook endpoint; what the request leaves null stays as it is. Needs `webhooks:manage`. */
     public function updateWebhookEndpoint(string $id, UpdateWebhookEndpointRequest $request): WebhookEndpointResponse
     {
-        return $this->call('PATCH', '/v1/webhooks/' . rawurlencode($id), $request->toArray(), read: WebhookEndpointResponse::fromArray(...));
+        return $this->call('PATCH', '/v1/webhooks/' . self::segment($id), $request->toArray(), read: WebhookEndpointResponse::fromArray(...));
     }
 
     /** Removes a webhook endpoint. Needs `webhooks:manage`. */
     public function deleteWebhookEndpoint(string $id): void
     {
-        $this->call('DELETE', '/v1/webhooks/' . rawurlencode($id));
+        $this->call('DELETE', '/v1/webhooks/' . self::segment($id));
     }
 
     /** Rotates the signing secret; the old one keeps signing for 24 hours. Needs `webhooks:manage`. */
     public function rotateWebhookSecret(string $id): RotatedWebhookSecret
     {
-        return $this->call('POST', '/v1/webhooks/' . rawurlencode($id) . '/secret', read: RotatedWebhookSecret::fromArray(...));
+        return $this->call('POST', '/v1/webhooks/' . self::segment($id) . '/secret', read: RotatedWebhookSecret::fromArray(...));
     }
 
     /** Sends a `webhook.test.v1` event once, also to a paused endpoint. Needs `webhooks:manage`. */
     public function sendWebhookTestEvent(string $id): WebhookDeliveryResponse
     {
-        return $this->call('POST', '/v1/webhooks/' . rawurlencode($id) . '/test', read: WebhookDeliveryResponse::fromArray(...));
+        return $this->call('POST', '/v1/webhooks/' . self::segment($id) . '/test', read: WebhookDeliveryResponse::fromArray(...));
     }
 
     /**
@@ -280,13 +281,13 @@ final class PostilioClient
     {
         $query = self::query(['status' => $status, 'before' => $before, 'limit' => $limit]);
 
-        return $this->call('GET', '/v1/webhooks/' . rawurlencode($id) . '/deliveries' . $query, read: WebhookDeliveryList::fromArray(...));
+        return $this->call('GET', '/v1/webhooks/' . self::segment($id) . '/deliveries' . $query, read: WebhookDeliveryList::fromArray(...));
     }
 
     /** Tries a delivery once more right away, with the same id and payload. Needs `webhooks:manage`. */
     public function retryWebhookDelivery(string $id, string $deliveryId): void
     {
-        $this->call('POST', '/v1/webhooks/' . rawurlencode($id) . '/deliveries/' . rawurlencode($deliveryId) . '/retry');
+        $this->call('POST', '/v1/webhooks/' . self::segment($id) . '/deliveries/' . self::segment($deliveryId) . '/retry');
     }
 
     /**
@@ -345,7 +346,7 @@ final class PostilioClient
                     ($this->sleep)($this->backoff($attempt));
                     continue;
                 }
-                throw new TransportException("{$call} failed: {$e->getMessage()}", $e->networkError, $e->getPrevious() ?? $e);
+                throw new TransportException("{$call} failed: {$e->getMessage()}", $e->networkError);
             }
             if ($response->status >= 200 && $response->status < 300) {
                 return $read === null ? null : self::read($call, $response, $read);
@@ -447,6 +448,16 @@ final class PostilioClient
     private function backoff(int $attempt): float
     {
         return min(self::FIRST_BACKOFF * 2 ** $attempt * (0.8 + random_int(0, 400) / 1000), $this->maxRetryDelay);
+    }
+
+    /** An id as one segment of a path; one that would point elsewhere (empty, `.`, `..`) is refused. */
+    private static function segment(string $id): string
+    {
+        if ($id === '' || $id === '.' || $id === '..') {
+            throw new \InvalidArgumentException('An id is not empty, "." or "..".');
+        }
+
+        return rawurlencode($id);
     }
 
     /** @param array<string, string|int|\BackedEnum|null> $parameters */

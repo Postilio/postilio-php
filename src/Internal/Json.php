@@ -29,13 +29,13 @@ final class Json
             throw new \UnexpectedValueException('The body is not JSON.', 0, $e);
         }
 
-        return \is_array($data) ? $data : throw new \UnexpectedValueException('The body is not a JSON object.');
+        return \is_array($data) && (!array_is_list($data) || $data === []) ? $data : throw new \UnexpectedValueException('The body is not a JSON object.');
     }
 
-    /** @param array<string, mixed> $data */
+    /** @param array<string, mixed> $data As an object, also when it is empty. */
     public static function encode(array $data): string
     {
-        return json_encode($data, \JSON_THROW_ON_ERROR | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_PRESERVE_ZERO_FRACTION);
+        return json_encode((object) $data, \JSON_THROW_ON_ERROR | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_PRESERVE_ZERO_FRACTION);
     }
 
     /** @param array<mixed> $data */

@@ -67,8 +67,19 @@ final class CurlTransportTest extends TestCase
             'contentType' => 'application/json',
             'idempotencyKey' => 'k-1',
             'expect' => null,
+            'contentLength' => (string) \strlen($body),
             'body' => $body,
         ], json_decode($response->body, true));
+    }
+
+    #[Test]
+    public function postWithoutABodySaysItsLengthIsZero(): void
+    {
+        $response = (new CurlTransport(5.0, 2.0))->send(new HttpRequest('POST', 'http://' . self::$address . '/echo', [], null));
+        $echo = json_decode($response->body, true);
+
+        self::assertIsArray($echo);
+        self::assertSame('0', $echo['contentLength']);
     }
 
     #[Test]

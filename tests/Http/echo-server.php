@@ -29,6 +29,7 @@ echo json_encode([
     'contentType' => $_SERVER['CONTENT_TYPE'] ?? null,
     'idempotencyKey' => $_SERVER['HTTP_IDEMPOTENCY_KEY'] ?? null,
     'expect' => $_SERVER['HTTP_EXPECT'] ?? null,
+    'contentLength' => $_SERVER['CONTENT_LENGTH'] ?? null,
     'body' => file_get_contents('php://input'),
 ]);
 

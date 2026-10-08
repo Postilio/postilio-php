@@ -36,7 +36,8 @@ final class Psr18Transport implements Transport
         try {
             $response = $this->client->sendRequest($message);
         } catch (ClientExceptionInterface $e) {
-            throw new TransportException($e->getMessage(), $e instanceof NetworkExceptionInterface, $e);
+            // Its message and class only: the exception keeps the request, Authorization header included.
+            throw new TransportException("{$e->getMessage()} (" . $e::class . ')', $e instanceof NetworkExceptionInterface);
         }
         $headers = [];
         foreach (array_keys($response->getHeaders()) as $name) {

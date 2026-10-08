@@ -104,11 +104,23 @@ final class PostilioClientTest extends TestCase
         self::assertSame('order-1042-receipt', $this->http->last()->getHeaderLine('Idempotency-Key'));
     }
 
+    /** @return iterable<string, array{string}> */
+    public static function invalidIdempotencyKeys(): iterable
+    {
+        yield 'empty' => [''];
+        yield 'a line break' => ["order-1\r\nX-Injected: yes"];
+        yield 'a line break at the end' => ["order-1\n"];
+        yield 'a control character' => ["order-1\x00"];
+        yield 'over 256 characters' => [str_repeat('k', 257)];
+        yield 'not ASCII' => ['bestelling-één'];
+    }
+
     #[Test]
-    public function sendEmailWithAnEmptyKeyThrowsWithoutSending(): void
+    #[DataProvider('invalidIdempotencyKeys')]
+    public function sendEmailWithAnInvalidKeyThrowsWithoutSending(string $key): void
     {
         try {
-            $this->client()->sendEmail(self::welcome(), '');
+            $this->client()->sendEmail(self::welcome(), $key);
             self::fail('No exception.');
         } catch (\InvalidArgumentException) {
             self::assertSame([], $this->http->requests);
@@ -146,6 +158,8 @@ final class PostilioClientTest extends TestCase
         yield 'createWebhookEndpoint' => [static fn(PostilioClient $c) => $c->createWebhookEndpoint(new CreateWebhookEndpointRequest('https://api.example.com/hooks/postilio', [WebhookEventType::Delivered])),
             'POST', '/v1/webhooks', '{"url":"https://api.example.com/hooks/postilio","events":["delivered"]}', 201, Fixtures::text('created-webhook-endpoint.json'), CreatedWebhookEndpoint::class];
         yield 'getWebhookEndpoint' => [static fn(PostilioClient $c) => $c->getWebhookEndpoint($id), 'GET', "/v1/webhooks/{$id}", '', 200, $endpoint, WebhookEndpointResponse::class];
+        yield 'updateWebhookEndpoint without changes' => [static fn(PostilioClient $c) => $c->updateWebhookEndpoint($id, new UpdateWebhookEndpointRequest()),
+            'PATCH', "/v1/webhooks/{$id}", '{}', 200, $endpoint, WebhookEndpointResponse::class];
         yield 'updateWebhookEndpoint' => [static fn(PostilioClient $c) => $c->updateWebhookEndpoint($id, new UpdateWebhookEndpointRequest(paused: false)),
             'PATCH', "/v1/webhooks/{$id}", '{"paused":false}', 200, $endpoint, WebhookEndpointResponse::class];
         yield 'deleteWebhookEndpoint' => [static fn(PostilioClient $c) => $c->deleteWebhookEndpoint($id), 'DELETE', "/v1/webhooks/{$id}", '', 204, '', null];
@@ -234,6 +248,28 @@ final class PostilioClientTest extends TestCase
         }
 
         self::assertSame('https://api.postilio.eu/v1/emails/..%2Fdomains%3Fx%3D1', (string) $this->http->last()->getUri());
+    }
+
+    /** @return iterable<string, array{\Closure(PostilioClient): mixed}> */
+    public static function idsThatLeaveThePath(): iterable
+    {
+        yield 'empty' => [static fn(PostilioClient $c) => $c->getEmail('')];
+        yield 'dot' => [static fn(PostilioClient $c) => $c->listWebhookDeliveries('.')];
+        yield 'dot dot' => [static fn(PostilioClient $c) => $c->rotateWebhookSecret('..')];
+        yield 'dot dot as the second id' => [static fn(PostilioClient $c) => $c->retryWebhookDelivery(self::ID, '..')];
+    }
+
+    /** @param \Closure(PostilioClient): mixed $call */
+    #[Test]
+    #[DataProvider('idsThatLeaveThePath')]
+    public function idThatWouldLeaveThePathThrowsWithoutSending(\Closure $call): void
+    {
+        try {
+            $call($this->client());
+            self::fail('No exception.');
+        } catch (\InvalidArgumentException) {
+            self::assertSame([], $this->http->requests);
+        }
     }
 
     #[Test]
@@ -388,7 +424,17 @@ final class PostilioClientTest extends TestCase
     }
 
     #[Test]
-    public function transportFailureThrowsATransportExceptionWithTheCause(): void
+    public function answerThatIsAListIsNotTheExpectedJson(): void
+    {
+        $this->http->answer(200, '[1, 2]');
+
+        $e = self::catch(fn() => $this->client()->listDomains());
+
+        self::assertSame('GET /v1/domains answered 200 with a body that is not the expected JSON: The body is not a JSON object.', $e->getMessage());
+    }
+
+    #[Test]
+    public function transportFailureThrowsATransportExceptionWithoutTheRequest(): void
     {
         $this->http->failNetwork();
 
@@ -397,8 +443,18 @@ final class PostilioClientTest extends TestCase
         self::assertInstanceOf(TransportException::class, $e);
         self::assertTrue($e->networkError);
         self::assertSame(0, $e->status);
-        self::assertSame('GET /v1/domains failed: Connection refused', $e->getMessage());
-        self::assertSame('Connection refused', $e->getPrevious()?->getMessage());
+        self::assertSame('GET /v1/domains failed: Connection refused (Postilio\Tests\Http\NetworkFailure)', $e->getMessage());
+        // A PSR-18 exception keeps the request, Authorization header included: it is not passed on, and no frame of the
+        // SDK holds the key as an argument (with zend.exception_ignore_args off, a trace keeps them).
+        self::assertNull($e->getPrevious());
+        self::assertStringNotContainsString(self::API_KEY, (string) $e);
+        $sdkFrames = array_filter($e->getTrace(), static function (array $frame): bool {
+            $class = \array_key_exists('class', $frame) ? $frame['class'] : '';
+
+            return str_starts_with($class, 'Postilio\\') && !str_starts_with($class, 'Postilio\\Tests\\');
+        });
+        self::assertNotSame([], $sdkFrames);
+        self::assertStringNotContainsString(self::API_KEY, print_r($sdkFrames, true));
     }
 
     #[Test]

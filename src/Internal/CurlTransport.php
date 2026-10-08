@@ -54,8 +54,9 @@ final class CurlTransport implements Transport
 
             return \strlen($line);
         });
-        if ($request->body !== null) {
-            curl_setopt($handle, \CURLOPT_POSTFIELDS, $request->body);
+        // Without a body, a POST still says its length is 0: some proxies refuse one without a length (411).
+        if ($request->body !== null || $request->method === 'POST' || $request->method === 'PATCH') {
+            curl_setopt($handle, \CURLOPT_POSTFIELDS, $request->body ?? '');
         }
         $body = curl_exec($handle);
         if (!\is_string($body)) {
