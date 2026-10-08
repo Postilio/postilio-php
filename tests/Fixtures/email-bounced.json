@@ -1,0 +1,16 @@
+{
+  "id": "01a10ce5-a09a-788b-9243-d7c9c59773d2",
+  "status": "bounced",
+  "from": "no-reply@mail.example.com",
+  "to": "bounced@simulator.postilio.eu",
+  "subject": "Welcome to Acme",
+  "tag": "welcome",
+  "acceptedAt": "2026-10-05T16:28:57.882+00:00",
+  "test": true,
+  "via": "api",
+  "events": [
+    { "type": "accepted", "occurredAt": "2026-10-05T16:28:57.882+00:00", "smtpCode": null, "response": null, "attempt": null, "remoteHost": null, "enhancedCode": null, "classification": null, "reason": null },
+    { "type": "queued", "occurredAt": "2026-10-05T16:28:57.882+00:00", "smtpCode": null, "response": null, "attempt": null, "remoteHost": null, "enhancedCode": null, "classification": null, "reason": null },
+    { "type": "bounced", "occurredAt": "2026-10-05T16:28:57.882+00:00", "smtpCode": 550, "response": "550 5.1.1 Simulated: the mailbox does not exist", "attempt": 1, "remoteHost": "mx.simulator.postilio.eu", "enhancedCode": "5.1.1", "classification": "InvalidRecipient", "reason": "recipient_rejected" }
+  ]
+}

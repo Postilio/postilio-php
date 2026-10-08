@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "id": "01a10f10-aaaa-7bbb-8ccc-ddddeeeeffff",
+      "eventId": "01a10f10-1234-7567-89ab-cdef01234567",
+      "type": "email.delivered.v1",
+      "emailId": "01a10ce5-a09a-788b-9243-d7c9c59773d2",
+      "to": "ada.lovelace@example.com",
+      "status": "failed",
+      "attempts": 20,
+      "lastAttemptAt": "2026-10-09T08:59:30+00:00",
+      "lastStatusCode": null,
+      "lastError": "timeout",
+      "lastDurationMs": 10000,
+      "responseSnippet": null,
+      "nextAttemptAt": null,
+      "createdAt": "2026-10-06T09:00:01+00:00"
+    }
+  ],
+  "next": null
+}

@@ -1,0 +1,10 @@
+{
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "errors": {
+    "to": ["Between 1 and 50 recipients are required."],
+    "body": ["Either text or html is required."]
+  },
+  "traceId": "00-4d6a1c9b71484cc59ac852cda603b93c-28de36d1c118bc08-00"
+}

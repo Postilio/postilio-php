@@ -1,0 +1,12 @@
+{
+    "from": "Acme <news@mail.example.com>",
+    "to": ["delivered@simulator.postilio.eu"],
+    "subject": "What is new in October",
+    "text": "Three new features. Unsubscribe: https://example.com/unsubscribe/3f9a1c7e",
+    "tag": "newsletter",
+    "headers": {
+      "List-Unsubscribe": "<https://example.com/unsubscribe/3f9a1c7e>, <mailto:unsubscribe@example.com?subject=3f9a1c7e>",
+      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      "X-Campaign-Id": "october-2026"
+    }
+  }

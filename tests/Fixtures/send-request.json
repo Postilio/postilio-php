@@ -1,0 +1,9 @@
+{
+    "from": "Acme <no-reply@mail.example.com>",
+    "to": ["ada.lovelace@example.com"],
+    "subject": "Your sign-in code",
+    "text": "Your code is 482913.",
+    "html": "<p>Your code is <b>482913</b>.</p>",
+    "tag": "sign-in",
+    "replyTo": "support@example.com"
+  }
