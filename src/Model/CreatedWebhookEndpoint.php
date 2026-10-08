@@ -24,11 +24,9 @@ final class CreatedWebhookEndpoint
      */
     public static function fromArray(array $data): self
     {
-        $fields = [
+        return new self(
             WebhookEndpointResponse::fromArray(Json::object($data, 'endpoint')),
             Json::string($data, 'secret'),
-        ];
-
-        return new self(...$fields);
+        );
     }
 }

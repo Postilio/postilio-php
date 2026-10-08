@@ -3,7 +3,7 @@
 The official PHP client for the [Postilio](https://postilio.eu) API: European transactional email. Send email, read
 messages and their events, manage domains, suppressions and webhooks, read your usage, and verify webhook signatures.
 
-PHP 8.1 or later. It depends on nothing but the PSR HTTP interfaces: bring the PSR-18 client your framework already
+PHP 8.2 or later. It depends on nothing but the PSR HTTP interfaces: bring the PSR-18 client your framework already
 has, or let it send with curl. No Guzzle, no global state.
 
 > Not published on Packagist yet; the API is in alpha. See [CHANGELOG.md](CHANGELOG.md).

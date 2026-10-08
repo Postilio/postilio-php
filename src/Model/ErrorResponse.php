@@ -25,11 +25,9 @@ final class ErrorResponse
      */
     public static function fromArray(array $data): self
     {
-        $fields = [
+        return new self(
             Json::string($data, 'error'),
             Json::nullableString($data, 'message'),
-        ];
-
-        return new self(...$fields);
+        );
     }
 }

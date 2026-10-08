@@ -25,8 +25,7 @@ final class WebhookEvent
     public static function parse(string $body): self
     {
         $data = Json::decode($body);
-        $fields = [Json::string($data, 'type'), Json::dateTime($data, 'timestamp'), WebhookEventData::fromArray(Json::object($data, 'data'))];
 
-        return new self(...$fields);
+        return new self(Json::string($data, 'type'), Json::dateTime($data, 'timestamp'), WebhookEventData::fromArray(Json::object($data, 'data')));
     }
 }

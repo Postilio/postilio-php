@@ -30,15 +30,13 @@ final class ApiUsage
      */
     public static function fromArray(array $data): self
     {
-        $fields = [
+        return new self(
             Json::string($data, 'month'),
             Json::bool($data, 'final'),
             Json::dateTime($data, 'resetsAt'),
             ApiUsageOrganization::fromArray(Json::object($data, 'organization')),
             ApiProjectUsage::fromArray(Json::object($data, 'project')),
             ApiKeyMonthUsage::fromArray(Json::object($data, 'apiKey')),
-        ];
-
-        return new self(...$fields);
+        );
     }
 }

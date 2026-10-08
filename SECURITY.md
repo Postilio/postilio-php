@@ -18,8 +18,7 @@ Only the latest release gets security fixes while the SDK is below 1.0.
   out of exception messages and out of `var_dump()` and `print_r()` of the client and of the requests in a trace.
   Keep the key in a secret store or an environment variable, not in your code or repository.
 - Run production with `zend.exception_ignore_args = On` (the default of `php.ini-production`), so stack traces hold no
-  argument values at all. On PHP 8.2 and later the SDK marks the request as a sensitive parameter, so a trace leaves it
-  out either way.
+  argument values at all. The SDK marks its request as a sensitive parameter, so a trace leaves it out either way.
 - With your own PSR-18 client, its exceptions keep the request, `Authorization` header included, in `getRequest()`.
   The SDK therefore does not pass such an exception on: its `TransportException` takes over only the message and the
   class name. Your client's own logging is your client's.

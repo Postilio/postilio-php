@@ -29,7 +29,7 @@ final class ApiProjectUsage
      */
     public static function fromArray(array $data): self
     {
-        $fields = [
+        return new self(
             Json::string($data, 'id'),
             Json::int($data, 'billable'),
             Json::int($data, 'accepted'),
@@ -37,8 +37,6 @@ final class ApiProjectUsage
             Json::int($data, 'delivered'),
             Json::int($data, 'bounced'),
             Json::int($data, 'complained'),
-        ];
-
-        return new self(...$fields);
+        );
     }
 }

@@ -23,10 +23,8 @@ final class TestEmailResponse
      */
     public static function fromArray(array $data): self
     {
-        $fields = [
+        return new self(
             Json::string($data, 'id'),
-        ];
-
-        return new self(...$fields);
+        );
     }
 }

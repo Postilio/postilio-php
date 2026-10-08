@@ -30,4 +30,4 @@ First version, against the alpha of the Postilio API (`/v1`, OpenAPI fingerprint
   `WebhookEvent::parse()`.
 - The API key is never in an exception message or a dump of the client, and the SDK's own requests are redacted in a
   trace that keeps arguments (see SECURITY.md).
-- PHP 8.1 to 8.5. MIT license.
+- PHP 8.2 to 8.5. MIT license.

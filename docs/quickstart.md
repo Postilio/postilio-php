@@ -1,6 +1,6 @@
 # Quick start
 
-From nothing to a sent and tracked email in five steps. You need PHP 8.1 or later and Composer.
+From nothing to a sent and tracked email in five steps. You need PHP 8.2 or later and Composer.
 
 ## 1. Install
 

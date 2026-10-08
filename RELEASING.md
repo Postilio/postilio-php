@@ -20,7 +20,7 @@ match the tag. Nothing is published yet.
    `PostilioClient::VERSION`. Semantic versioning: a removed or changed public member is a major version (a minor one
    while below 1.0); a new member a minor; a fix a patch. Pre-releases: `0.2.0-alpha.1`. Classes in `Postilio\Internal`
    and members marked `@internal` are not public API.
-2. Run `./build.sh` locally, `tools/test-in-container.sh` for every supported PHP version (8.1 to 8.5), and the
+2. Run `./build.sh` locally, `tools/test-in-container.sh` for every supported PHP version (8.2 to 8.5), and the
    contract tests against a test environment (see `CONTRIBUTING.md`).
 3. Commit (`chore: release 0.2.0`) through a pull request, then tag the merged commit signed and push the tag:
 
@@ -35,6 +35,13 @@ match the tag. Nothing is published yet.
 
 A tag is never moved or reused: a broken release gets a new patch version.
 
+## Supported PHP versions
+
+The SDK supports the PHP versions that php.net still supports, and no version past its end of life: 8.2 to 8.5 now.
+Drop a version in the first minor release after its end of life (PHP 8.2: 31 December 2026), by raising `php` in
+`composer.json` and `phpVersion.min` in `phpstan.neon.dist`; add a new PHP version to the test matrix when it is
+released.
+
 ## Continuous integration
 
 There is no workflow in this repository yet; whether to add one is the owner's decision, since Actions minutes cost
@@ -43,8 +50,8 @@ money for private repositories. A workflow for this repository would, on every p
 | Job | Steps |
 |---|---|
 | `build` (PHP 8.4, ubuntu-latest) | checkout, `shivammathur/setup-php` with `curl` and `pcov`, `./build.sh` |
-| `test` (matrix PHP 8.1, 8.2, 8.3, 8.4, 8.5) | checkout, setup-php, `composer update --no-interaction`, `vendor/bin/phpunit --exclude-group contract` |
-| `lowest` (PHP 8.1) | as `test`, with `composer update --prefer-lowest` |
+| `test` (matrix PHP 8.2, 8.3, 8.4, 8.5) | checkout, setup-php, `composer update --no-interaction`, `vendor/bin/phpunit --exclude-group contract` |
+| `lowest` (PHP 8.2) | as `test`, with `composer update --prefer-lowest` |
 | `mutation` (PHP 8.4, optional) | `composer mutation` with a minimum covered MSI of 95 % |
 
 Actions pinned to a commit SHA, with the version as a comment. The contract tests stay out of CI: they need a running

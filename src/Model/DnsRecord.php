@@ -26,13 +26,11 @@ final class DnsRecord
      */
     public static function fromArray(array $data): self
     {
-        $fields = [
+        return new self(
             Json::string($data, 'type'),
             Json::string($data, 'name'),
             Json::string($data, 'value'),
             Json::enum($data, 'status', DnsRecordStatus::class),
-        ];
-
-        return new self(...$fields);
+        );
     }
 }

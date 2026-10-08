@@ -4,7 +4,7 @@ Thank you for helping. Open an issue before a large change, so we can agree on t
 
 ## Build and test
 
-You need PHP 8.1 or later with `ext-curl`, and Composer.
+You need PHP 8.2 or later with `ext-curl`, and Composer.
 
 ```sh
 ./build.sh
@@ -15,7 +15,7 @@ It validates `composer.json`, installs, and runs everything a pull request must 
 | Command | What |
 |---|---|
 | `composer cs` | code style ([PER Coding Style](https://www.php-fig.org/per/coding-style/), php-cs-fixer); `composer cs:fix` fixes it |
-| `composer stan` | PHPStan at the highest level, over `src`, `tests` and `examples`, for PHP 8.1 to 8.5 |
+| `composer stan` | PHPStan at the highest level, over `src`, `tests` and `examples`, for PHP 8.2 to 8.5 |
 | `composer test` | PHPUnit: unit tests with a fake PSR-18 client, the curl transport against a local `php -S`, the models against the payloads in the docs, the spec tests |
 
 It then runs the examples (they skip the API without a key) and checks the package as composer downloads it (a
@@ -25,7 +25,7 @@ a key. Run it before you open a pull request.
 To run the tests on another PHP version, in the official PHP image with podman or docker:
 
 ```sh
-tools/test-in-container.sh 8.1
+tools/test-in-container.sh 8.2
 ```
 
 `composer mutation` runs [Infection](https://infection.github.io/) over `src` (it needs pcov or Xdebug). Look at every
@@ -38,9 +38,6 @@ mutant that escapes: either a test is missing, or the code it changed is not nee
   Signed commits are welcome.
 - One class per file. Models are named exactly as the schemas in the OpenAPI document, with the same fields; they are
   immutable (readonly properties) and read answers in `fromArray()`.
-- A model reads its fields into an array before `new self(...$fields)`, and code in general evaluates anything that may
-  throw before `new`: on PHP 8.1, an exception thrown while the arguments of `new` are evaluated crashes the process when
-  the class has readonly properties.
 - A status, type or reason is a backed enum in `Postilio\Enum`, and a model field holding one is `Enum|string`, so a
   value the API adds later does not break anyone.
 - Every behaviour has one test; vary the input with a data provider rather than writing another test.

@@ -25,10 +25,8 @@ final class DomainList
      */
     public static function fromArray(array $data): self
     {
-        $fields = [
+        return new self(
             Json::objects($data, 'data', DomainResponse::fromArray(...)),
-        ];
-
-        return new self(...$fields);
+        );
     }
 }

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Runs the tests and the examples on another PHP version, in the official php:<version>-cli-alpine image (podman or
 # docker), on a copy of the working tree; this checkout and its vendor/ stay as they are. Composer resolves the dev
-# dependencies for that version (PHPUnit 10 on PHP 8.1, for instance).
-# Usage: tools/test-in-container.sh 8.1
+# dependencies for that version (PHPUnit 11 on PHP 8.2, for instance).
+# Usage: tools/test-in-container.sh 8.2
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-version="${1:?Usage: tools/test-in-container.sh <php version, such as 8.1>}"
+version="${1:?Usage: tools/test-in-container.sh <php version, such as 8.2>}"
 engine=$(command -v podman || command -v docker || { echo "Needs podman or docker." >&2; exit 1; })
 
 "$engine" run --rm --security-opt label=disable -v "$PWD":/src:ro "docker.io/library/php:${version}-cli-alpine" sh -euc '

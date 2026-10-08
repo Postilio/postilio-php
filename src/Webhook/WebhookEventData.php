@@ -44,7 +44,7 @@ final class WebhookEventData
      */
     public static function fromArray(array $data): self
     {
-        $fields = [
+        return new self(
             Json::nullableString($data, 'emailId'),
             Json::nullableString($data, 'projectId'),
             Json::nullableString($data, 'endpointId'),
@@ -61,8 +61,6 @@ final class WebhookEventData
             Json::nullableString($data, 'response'),
             Json::nullableString($data, 'remoteHost'),
             Json::nullableDateTime($data, 'sendAt'),
-        ];
-
-        return new self(...$fields);
+        );
     }
 }

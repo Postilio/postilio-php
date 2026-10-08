@@ -27,11 +27,9 @@ final class WebhookDeliveryList
      */
     public static function fromArray(array $data): self
     {
-        $fields = [
+        return new self(
             Json::objects($data, 'data', WebhookDeliveryResponse::fromArray(...)),
             Json::nullableString($data, 'next'),
-        ];
-
-        return new self(...$fields);
+        );
     }
 }

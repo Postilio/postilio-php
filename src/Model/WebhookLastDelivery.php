@@ -27,12 +27,10 @@ final class WebhookLastDelivery
      */
     public static function fromArray(array $data): self
     {
-        $fields = [
+        return new self(
             Json::dateTime($data, 'at'),
             Json::nullableInt($data, 'statusCode'),
             Json::enum($data, 'status', WebhookDeliveryStatus::class),
-        ];
-
-        return new self(...$fields);
+        );
     }
 }
