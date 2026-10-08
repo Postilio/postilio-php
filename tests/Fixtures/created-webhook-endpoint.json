@@ -1,0 +1,18 @@
+{
+  "endpoint": {
+    "id": "01a10f00-1111-7222-8333-444455556666",
+    "url": "https://api.example.com/hooks/postilio",
+    "description": null,
+    "events": ["delivered", "bounced", "complained"],
+    "mode": "live",
+    "paused": false,
+    "pauseReason": null,
+    "pausedAt": null,
+    "failingSince": null,
+    "secretHint": "x7Qk",
+    "previousSecretExpiresAt": null,
+    "createdAt": "2026-10-06T09:00:00+00:00",
+    "lastDelivery": null
+  },
+  "secret": "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw"
+}

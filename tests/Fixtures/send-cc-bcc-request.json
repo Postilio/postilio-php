@@ -1,0 +1,8 @@
+{
+  "from": "Acme Support <support@mail.example.com>",
+  "to": ["ada.lovelace@example.com"],
+  "cc": ["account-manager@example.com"],
+  "bcc": ["archive@example.com"],
+  "subject": "Your ticket 4711",
+  "text": "Solved: the export works again."
+}

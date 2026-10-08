@@ -1,0 +1,13 @@
+{
+  "data": [
+    {
+      "id": "01a10d2e-7c1b-7f3a-9d42-1b2c3d4e5f60",
+      "address": "former.customer@example.org",
+      "reason": "hard_bounce",
+      "detail": "550 5.1.1 The email account that you tried to reach does not exist",
+      "sourceMessageId": "01a10ce5-a09a-788b-9243-d7c9c59773d2",
+      "createdAt": "2026-10-05T16:28:58.120+00:00"
+    }
+  ],
+  "next": "01a10d2e-7c1b-7f3a-9d42-1b2c3d4e5f60"
+}

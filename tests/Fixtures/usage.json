@@ -1,0 +1,16 @@
+{
+  "month": "2026-10",
+  "final": false,
+  "resetsAt": "2026-11-01T00:00:00+00:00",
+  "organization": { "plan": "growth", "state": "warning" },
+  "project": {
+    "id": "0199b3c0-6f3a-7d2e-9a41-2c8e5d7f1a20",
+    "billable": 12040, "accepted": 12101, "suppressed": 61,
+    "delivered": 11950, "bounced": 88, "complained": 2
+  },
+  "apiKey": {
+    "id": "0199b3c4-2b71-7c05-8e6d-5a9f3c1e7b42",
+    "accepted": 8020, "sent": 7981, "suppressed": 39,
+    "delivered": 7915, "bounced": 64, "complained": 2
+  }
+}

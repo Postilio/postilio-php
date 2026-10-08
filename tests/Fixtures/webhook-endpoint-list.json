@@ -1,0 +1,19 @@
+{
+  "data": [
+    {
+      "id": "01a10f00-1111-7222-8333-444455556666",
+      "url": "https://api.example.com/hooks/postilio",
+      "description": "Order service",
+      "events": ["delivered", "bounced", "complained", "a_later_event"],
+      "mode": "test",
+      "paused": true,
+      "pauseReason": "Every attempt failed for 3 days.",
+      "pausedAt": "2026-10-09T09:00:00+00:00",
+      "failingSince": "2026-10-06T09:00:00+00:00",
+      "secretHint": "x7Qk",
+      "previousSecretExpiresAt": "2026-10-07T09:00:00+00:00",
+      "createdAt": "2026-10-06T09:00:00+00:00",
+      "lastDelivery": { "at": "2026-10-09T08:59:30+00:00", "statusCode": 503, "status": "pending" }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "01a1081b-eb5c-7685-ab38-fdd4a4ab10e5",
+  "name": "mail.example.com",
+  "status": "pending",
+  "checkedAt": null,
+  "records": [
+    { "type": "CNAME", "name": "pst202610._domainkey.mail.example.com", "value": "pst202610.ft6sub3lbo.dkim.postilio.eu", "status": "unknown" },
+    { "type": "CNAME", "name": "bounce.mail.example.com", "value": "rp.postilio.eu", "status": "unknown" }
+  ],
+  "createdAt": "2026-10-04T18:10:09.884+00:00",
+  "addedBy": null,
+  "failingSince": null,
+  "sent30d": 0,
+  "dmarc": null
+}
