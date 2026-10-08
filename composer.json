@@ -1,5 +1,5 @@
 {
-  "name": "postilio/postilio",
+  "name": "postilio/postilio-php",
   "description": "The official PHP client for the Postilio API: European transactional email.",
   "type": "library",
   "license": "MIT",

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Postilio\Model;
 
+use Postilio\Enum\EmailEventReason;
 use Postilio\Enum\EmailStatus;
 use Postilio\Internal\Json;
 
@@ -22,7 +23,7 @@ final class EmailEvent
         public readonly ?string $enhancedCode,
         public readonly ?string $classification,
         /** Why the attempt was delayed or failed, as a stable code such as `mailbox_full`. */
-        public readonly ?string $reason,
+        public readonly EmailEventReason|string|null $reason,
     ) {}
 
     /**
@@ -43,7 +44,7 @@ final class EmailEvent
             Json::nullableString($data, 'remoteHost'),
             Json::nullableString($data, 'enhancedCode'),
             Json::nullableString($data, 'classification'),
-            Json::nullableString($data, 'reason'),
+            Json::nullableEnum($data, 'reason', EmailEventReason::class),
         ];
 
         return new self(...$fields);

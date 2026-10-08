@@ -76,6 +76,26 @@ final class ContractTest extends TestCase
     }
 
     #[Test]
+    public function sendEmailTestKeyWithSendAtIsSimulatedAtOnceSoCancelingConflicts(): void
+    {
+        $client = self::client();
+        $sent = $client->sendEmail(new SendEmailRequest(
+            self::env('POSTILIO_CONTRACT_FROM'),
+            [self::DELIVERED],
+            'Scheduled',
+            text: 'Simulated at once.',
+            sendAt: new \DateTimeImmutable('+1 hour'),
+        ));
+
+        try {
+            $client->cancelEmail($sent->ids[0]);
+            self::fail('No exception.');
+        } catch (ConflictException $e) {
+            self::assertSame(ErrorCode::EmailNotScheduled, $e->error());
+        }
+    }
+
+    #[Test]
     public function getEmailWithAnUnknownKeyThrowsAuthentication(): void
     {
         self::client();

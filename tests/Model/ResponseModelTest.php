@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use Postilio\Enum\DmarcStatus;
 use Postilio\Enum\DnsRecordStatus;
 use Postilio\Enum\DomainStatus;
+use Postilio\Enum\EmailEventReason;
 use Postilio\Enum\EmailStatus;
 use Postilio\Enum\SuppressionReason;
 use Postilio\Enum\UsageState;
@@ -89,7 +90,7 @@ final class ResponseModelTest extends TestCase
                         remoteHost: 'mx.simulator.postilio.eu',
                         enhancedCode: '5.1.1',
                         classification: 'InvalidRecipient',
-                        reason: 'recipient_rejected',
+                        reason: EmailEventReason::RecipientRejected,
                     ),
                 ],
                 via: 'api',
@@ -105,10 +106,12 @@ final class ResponseModelTest extends TestCase
         $details = Fixtures::json('email-bounced.json');
         $details['status'] = 'a_later_status';
         $details['sendAt'] = '2026-11-02T09:00:00+01:00';
+        $details['events'] = [['type' => 'canceled', 'occurredAt' => '2026-11-02T08:00:00Z', 'smtpCode' => null, 'response' => null, 'reason' => 'plan_daily_limit_reached']];
 
         $email = EmailDetails::fromArray($details);
 
         self::assertSame('a_later_status', $email->status);
+        self::assertSame('plan_daily_limit_reached', $email->events[0]->reason);
         self::assertEquals(new \DateTimeImmutable('2026-11-02T08:00:00Z'), $email->sendAt);
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Postilio\Webhook;
 
+use Postilio\Enum\EmailEventReason;
 use Postilio\Enum\EmailStatus;
 use Postilio\Internal\Json;
 
@@ -29,7 +30,7 @@ final class WebhookEventData
         public readonly ?string $enhancedCode = null,
         public readonly ?string $classification = null,
         /** Why an attempt was delayed or failed, or why a scheduled message was canceled, as a stable code. */
-        public readonly ?string $reason = null,
+        public readonly EmailEventReason|string|null $reason = null,
         public readonly ?string $response = null,
         public readonly ?string $remoteHost = null,
         /** For a scheduled message: when it goes out. */
@@ -56,7 +57,7 @@ final class WebhookEventData
             Json::nullableInt($data, 'smtpCode'),
             Json::nullableString($data, 'enhancedCode'),
             Json::nullableString($data, 'classification'),
-            Json::nullableString($data, 'reason'),
+            Json::nullableEnum($data, 'reason', EmailEventReason::class),
             Json::nullableString($data, 'response'),
             Json::nullableString($data, 'remoteHost'),
             Json::nullableDateTime($data, 'sendAt'),

@@ -6,6 +6,7 @@ namespace Postilio\Tests\Webhook;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Postilio\Enum\EmailEventReason;
 use Postilio\Enum\EmailStatus;
 use Postilio\Tests\Fixtures;
 use Postilio\Webhook\WebhookEvent;
@@ -31,7 +32,7 @@ final class WebhookEventTest extends TestCase
                 smtpCode: 550,
                 enhancedCode: '5.1.1',
                 classification: 'InvalidRecipient',
-                reason: 'recipient_rejected',
+                reason: EmailEventReason::RecipientRejected,
                 response: '550 5.1.1 The email account that you tried to reach does not exist',
                 remoteHost: 'mx.example.com',
             )),
