@@ -138,7 +138,7 @@ final class PostilioClient
             throw new \InvalidArgumentException('An Idempotency-Key is 1 to 256 characters.');
         }
 
-        return $this->call('POST', '/v1/emails', $request->toArray(), SendEmailResponse::fromArray(...), $idempotencyKey ?? self::uuid());
+        return $this->call('POST', '/v1/emails', $request->toArray(), SendEmailResponse::fromArray(...), $idempotencyKey ?? bin2hex(random_bytes(16)));
     }
 
     /**
@@ -299,7 +299,7 @@ final class PostilioClient
     /** @return array<string, mixed> */
     public function __debugInfo(): array
     {
-        return ['baseUrl' => $this->baseUrl, 'maxRetries' => $this->maxRetries, 'maxRetryDelay' => $this->maxRetryDelay];
+        return ['baseUrl' => $this->baseUrl];
     }
 
     /**
@@ -435,7 +435,7 @@ final class PostilioClient
         }
         $date = \DateTimeImmutable::createFromFormat('D, d M Y H:i:s \G\M\T', $value, new \DateTimeZone('UTC'));
 
-        return $date === false ? null : (float) max(0, $date->getTimestamp() - time());
+        return $date === false ? null : max(0, $date->getTimestamp() - time());
     }
 
     // 0.5 s, 1 s, 2 s, … up to the maximum, with ±20% spread so clients that failed together do not retry together.
@@ -455,16 +455,6 @@ final class PostilioClient
         }
 
         return $present === [] ? '' : '?' . http_build_query($present, '', '&', \PHP_QUERY_RFC3986);
-    }
-
-    /** A random (version 4) UUID. */
-    private static function uuid(): string
-    {
-        $bytes = random_bytes(16);
-        $bytes[6] = \chr(\ord($bytes[6]) & 0x0F | 0x40);
-        $bytes[8] = \chr(\ord($bytes[8]) & 0x3F | 0x80);
-
-        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($bytes), 4));
     }
 
     private static function discoverRequestFactory(): RequestFactoryInterface

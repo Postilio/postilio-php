@@ -25,11 +25,8 @@ final class Json
         } catch (\JsonException $e) {
             throw new \UnexpectedValueException('The body is not JSON.', 0, $e);
         }
-        if (!\is_array($data) || array_is_list($data) && $data !== []) {
-            throw new \UnexpectedValueException('The body is not a JSON object.');
-        }
 
-        return $data;
+        return \is_array($data) ? $data : throw new \UnexpectedValueException('The body is not a JSON object.');
     }
 
     /** @param array<string, mixed> $data */

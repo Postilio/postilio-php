@@ -46,6 +46,8 @@ use Postilio\Model\WebhookEndpointList;
 use Postilio\Model\WebhookEndpointResponse;
 use Postilio\PostilioClient;
 use Postilio\Tests\Http\FakeHttpClient;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\RequestInterface;
 
 final class PostilioClientTest extends TestCase
 {
@@ -88,7 +90,7 @@ final class PostilioClientTest extends TestCase
         $client->sendEmail(self::welcome());
 
         $first = $this->http->requests[0]->getHeaderLine('Idempotency-Key');
-        self::assertMatchesRegularExpression('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/D', $first);
+        self::assertMatchesRegularExpression('/^[0-9a-f]{32}$/D', $first);
         self::assertNotSame($first, $this->http->requests[1]->getHeaderLine('Idempotency-Key'));
     }
 
@@ -323,20 +325,30 @@ final class PostilioClientTest extends TestCase
         $e = self::catch(fn() => $this->client()->sendEmail(self::welcome()));
 
         self::assertInstanceOf(ValidationException::class, $e);
+        self::assertSame(400, $e->status);
         self::assertSame(['to' => ['Between 1 and 50 recipients are required.'], 'body' => ['Either text or html is required.']], $e->errors);
         self::assertSame('00-4d6a1c9b71484cc59ac852cda603b93c-28de36d1c118bc08-00', $e->traceId);
         self::assertSame('POST /v1/emails answered 400: to: Between 1 and 50 recipients are required. body: Either text or html is required.', $e->getMessage());
     }
 
-    #[Test]
-    public function validationErrorWithoutABodyHasNoProblems(): void
+    /** @return iterable<string, array{string}> */
+    public static function bodiesWithoutProblems(): iterable
     {
-        $this->http->answer(400);
+        yield 'no body' => [''];
+        yield 'problems of another shape' => ['{"errors":{"to":"not a list"},"traceId":"00-abc-def-00"}'];
+    }
+
+    #[Test]
+    #[DataProvider('bodiesWithoutProblems')]
+    public function validationErrorWithoutReadableProblemsHasNone(string $body): void
+    {
+        $this->http->answer(400, $body);
 
         $e = self::catch(fn() => $this->client()->listDomains());
 
         self::assertInstanceOf(ValidationException::class, $e);
         self::assertSame([], $e->errors);
+        self::assertNull($e->traceId);
         self::assertSame('GET /v1/domains answered 400.', $e->getMessage());
     }
 
@@ -390,6 +402,27 @@ final class PostilioClientTest extends TestCase
     }
 
     #[Test]
+    public function clientUsesTheFactoriesItIsGiven(): void
+    {
+        $this->http->answer(200, '{"data":[]}');
+        $factory = new class implements RequestFactoryInterface {
+            public int $requests = 0;
+
+            public function createRequest(string $method, $uri): RequestInterface
+            {
+                $this->requests++;
+
+                return (new Psr17Factory())->createRequest($method, $uri)->withHeader('X-Made-By', 'the given factory');
+            }
+        };
+
+        (new PostilioClient(self::API_KEY, $this->http, $factory, new Psr17Factory()))->listDomains();
+
+        self::assertSame(1, $factory->requests);
+        self::assertSame('the given factory', $this->http->last()->getHeaderLine('X-Made-By'));
+    }
+
+    #[Test]
     public function clientWithoutFactoriesFindsThemThroughDiscovery(): void
     {
         $this->http->answer(200, '{"data":[]}');
@@ -434,9 +467,12 @@ final class PostilioClientTest extends TestCase
     }
 
     #[Test]
-    public function dumpOfTheClientDoesNotShowTheKey(): void
+    public function dumpOfTheClientShowsTheAddressButNotTheKey(): void
     {
-        self::assertStringNotContainsString(self::API_KEY, print_r($this->client(), true));
+        $dump = print_r($this->client(), true);
+
+        self::assertStringNotContainsString(self::API_KEY, $dump);
+        self::assertStringContainsString('[baseUrl] => https://api.postilio.eu', $dump);
     }
 
     private function client(string $baseUrl = 'https://api.postilio.eu'): PostilioClient

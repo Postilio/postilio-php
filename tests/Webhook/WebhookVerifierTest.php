@@ -70,6 +70,16 @@ final class WebhookVerifierTest extends TestCase
     public function verifyMissingHeadersIsFalse(): void
     {
         self::assertFalse((new WebhookVerifier(self::SECRET))->verify(null, null, null, self::BODY, self::TIMESTAMP));
+        self::assertFalse((new WebhookVerifier(self::SECRET))->verify(self::ID, '1614265330', null, self::BODY, self::TIMESTAMP));
+    }
+
+    #[Test]
+    public function verifyNoToleranceAcceptsOnlyTheExactTime(): void
+    {
+        $verifier = new WebhookVerifier(self::SECRET, toleranceSeconds: 0);
+
+        self::assertTrue($verifier->verify(self::ID, '1614265330', self::SIGNATURE, self::BODY, self::TIMESTAMP));
+        self::assertFalse($verifier->verify(self::ID, '1614265330', self::SIGNATURE, self::BODY, self::TIMESTAMP + 1));
     }
 
     #[Test]

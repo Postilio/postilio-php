@@ -51,7 +51,7 @@
     "stan": "phpstan analyse --memory-limit=1G",
     "cs": "php-cs-fixer check --diff",
     "cs:fix": "php-cs-fixer fix",
-    "mutation": "infection --threads=max --show-mutations"
+    "mutation": "infection --threads=max --initial-tests-php-options='-d pcov.enabled=1'"
   },
   "scripts-descriptions": {
     "test": "Run the unit and spec tests (the contract tests run when POSTILIO_CONTRACT_* is set)",

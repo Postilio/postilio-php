@@ -176,7 +176,7 @@ final class RequestModelTest extends TestCase
     #[Test]
     public function createWebhookEndpointRequestWritesTheModeAndDescription(): void
     {
-        $request = new CreateWebhookEndpointRequest('https://api.example.com/hooks', ['delivered'], 'Orders', WebhookMode::Test);
+        $request = new CreateWebhookEndpointRequest('https://api.example.com/hooks', [WebhookEventType::Delivered], 'Orders', WebhookMode::Test);
 
         self::assertSame(
             ['url' => 'https://api.example.com/hooks', 'events' => ['delivered'], 'description' => 'Orders', 'mode' => 'test'],

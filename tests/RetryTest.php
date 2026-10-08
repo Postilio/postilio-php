@@ -261,6 +261,8 @@ final class RetryTest extends TestCase
             $this->client()->getDomain(self::ID);
         } finally {
             self::assertCount(3, $this->http->requests);
+            self::assertCount(2, $this->waits);
+            self::assertEqualsWithDelta(0.5, $this->waits[0], 0.1);
         }
     }
 

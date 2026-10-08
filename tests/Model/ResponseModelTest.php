@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Postilio\Tests\Model;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Postilio\Enum\DmarcStatus;
@@ -308,21 +309,36 @@ final class ResponseModelTest extends TestCase
         TestEmailResponse::fromArray([]);
     }
 
-    #[Test]
-    public function fromArrayFieldOfTheWrongTypeThrows(): void
+    /** @return iterable<string, array{\Closure(): object, string}> */
+    public static function answersOfTheWrongShape(): iterable
     {
-        $this->expectException(\UnexpectedValueException::class);
-        $this->expectExceptionMessage('sent30d');
+        $domain = Fixtures::json('domain-created.json');
+        $email = Fixtures::json('email-bounced.json');
+        $usage = Fixtures::json('usage.json');
+        $send = Fixtures::json('send-response.json');
 
-        DomainResponse::fromArray(['sent30d' => '0'] + Fixtures::json('domain-created.json'));
+        yield 'a string for an integer' => [static fn() => DomainResponse::fromArray(['sent30d' => '0'] + $domain), 'sent30d'];
+        yield 'a string for a boolean' => [static fn() => EmailDetails::fromArray(['test' => 'yes'] + $email), 'test'];
+        yield 'a required date missing' => [static fn() => EmailDetails::fromArray(array_diff_key($email, ['acceptedAt' => 1])), 'acceptedAt'];
+        yield 'words for a date' => [static fn() => ApiUsage::fromArray(['resetsAt' => 'next month'] + $usage), 'resetsAt'];
+        yield 'a date without an offset' => [static fn() => ApiUsage::fromArray(['resetsAt' => '2026-11-01T00:00:00'] + $usage), 'resetsAt'];
+        yield 'words after a date' => [static fn() => ApiUsage::fromArray(['resetsAt' => '2026-11-01T00:00:00Z +1 day'] + $usage), 'resetsAt'];
+        yield 'words before a date' => [static fn() => ApiUsage::fromArray(['resetsAt' => 'tomorrow 2026-11-01T00:00:00Z'] + $usage), 'resetsAt'];
+        yield 'a required object missing' => [static fn() => ApiUsage::fromArray(array_diff_key($usage, ['organization' => 1])), 'organization'];
+        yield 'a list where an object belongs' => [static fn() => ApiUsage::fromArray(['project' => [1, 2]] + $usage), 'project'];
+        yield 'a number in a list of objects' => [static fn() => EmailDetails::fromArray(['events' => [1]] + $email), 'events'];
+        yield 'a number in a list of strings' => [static fn() => SendEmailResponse::fromArray(['ids' => [1]] + $send), 'ids'];
+        yield 'an object where a list belongs' => [static fn() => SendEmailResponse::fromArray(['ids' => ['a' => 'b']] + $send), 'ids'];
     }
 
+    /** @param \Closure(): object $read */
     #[Test]
-    public function fromArrayDateThatIsNotADateThrows(): void
+    #[DataProvider('answersOfTheWrongShape')]
+    public function fromArrayFieldOfTheWrongShapeThrowsNamingTheField(\Closure $read, string $field): void
     {
         $this->expectException(\UnexpectedValueException::class);
-        $this->expectExceptionMessage('resetsAt');
+        $this->expectExceptionMessage($field);
 
-        ApiUsage::fromArray(['resetsAt' => 'next month'] + Fixtures::json('usage.json'));
+        $read();
     }
 }
