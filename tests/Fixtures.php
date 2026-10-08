@@ -17,6 +17,17 @@ final class Fixtures
         return $text;
     }
 
+    /** One part of a fixture, such as the first item of its data, as JSON. */
+    public static function item(string $name, string|int ...$path): string
+    {
+        $data = self::json($name);
+        foreach ($path as $key) {
+            $data = \is_array($data) && \array_key_exists($key, $data) ? $data[$key] : throw new \RuntimeException("No {$key} in {$name}.");
+        }
+
+        return json_encode($data, \JSON_THROW_ON_ERROR | \JSON_UNESCAPED_SLASHES);
+    }
+
     /** @return array<mixed> */
     public static function json(string $name): array
     {
