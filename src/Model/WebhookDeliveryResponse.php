@@ -40,7 +40,7 @@ final class WebhookDeliveryResponse
      */
     public static function fromArray(array $data): self
     {
-        return new self(
+        $fields = [
             Json::string($data, 'id'),
             Json::string($data, 'eventId'),
             Json::string($data, 'type'),
@@ -55,6 +55,8 @@ final class WebhookDeliveryResponse
             Json::nullableString($data, 'responseSnippet'),
             Json::nullableDateTime($data, 'nextAttemptAt'),
             Json::dateTime($data, 'createdAt'),
-        );
+        ];
+
+        return new self(...$fields);
     }
 }

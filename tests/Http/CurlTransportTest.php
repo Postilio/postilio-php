@@ -133,6 +133,21 @@ final class CurlTransportTest extends TestCase
         }
     }
 
+    #[Test]
+    public function failureKeepsTheKeyOutOfItsTraceWhenArgumentsAreKept(): void
+    {
+        $ignoreArgs = (string) ini_get('zend.exception_ignore_args');
+        ini_set('zend.exception_ignore_args', '0');
+        try {
+            (new PostilioClient(self::API_KEY, baseUrl: 'http://' . self::freeAddress()))->listDomains();
+            self::fail('No exception.');
+        } catch (TransportException $e) {
+            self::assertStringNotContainsString(self::API_KEY, print_r($e, true));
+        } finally {
+            ini_set('zend.exception_ignore_args', $ignoreArgs);
+        }
+    }
+
     private static function freeAddress(): string
     {
         $socket = stream_socket_server('tcp://127.0.0.1:0') ?: throw new \RuntimeException('No free port.');

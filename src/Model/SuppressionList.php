@@ -27,9 +27,11 @@ final class SuppressionList
      */
     public static function fromArray(array $data): self
     {
-        return new self(
+        $fields = [
             Json::objects($data, 'data', SuppressionResponse::fromArray(...)),
             Json::nullableString($data, 'next'),
-        );
+        ];
+
+        return new self(...$fields);
     }
 }

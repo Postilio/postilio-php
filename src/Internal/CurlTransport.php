@@ -26,7 +26,7 @@ final class CurlTransport implements Transport
 
     public function __construct(private readonly float $timeout, private readonly float $connectTimeout) {}
 
-    public function send(HttpRequest $request): HttpResponse
+    public function send(#[\SensitiveParameter] HttpRequest $request): HttpResponse
     {
         // No "Expect: 100-continue" round trip before a larger body.
         $headers = ['Expect:'];

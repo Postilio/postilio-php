@@ -9,6 +9,9 @@ namespace Postilio\Internal;
  * UnexpectedValueException naming the field; an optional one may be missing or null. Unknown fields are ignored, since
  * Postilio may add fields.
  *
+ * A model reads its fields into an array before `new self(...$fields)`: on PHP 8.1, an exception thrown while the
+ * arguments of `new` are evaluated corrupts memory when the class has readonly properties, and the process crashes.
+ *
  * @internal
  */
 final class Json

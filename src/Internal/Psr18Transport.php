@@ -24,7 +24,7 @@ final class Psr18Transport implements Transport
         private readonly StreamFactoryInterface $streamFactory,
     ) {}
 
-    public function send(HttpRequest $request): HttpResponse
+    public function send(#[\SensitiveParameter] HttpRequest $request): HttpResponse
     {
         $message = $this->requestFactory->createRequest($request->method, $request->url);
         foreach ($request->headers as $name => $value) {
@@ -43,6 +43,8 @@ final class Psr18Transport implements Transport
             $headers[strtolower((string) $name)] = $response->getHeaderLine((string) $name);
         }
 
-        return new HttpResponse($response->getStatusCode(), $headers, (string) $response->getBody());
+        $body = (string) $response->getBody();
+
+        return new HttpResponse($response->getStatusCode(), $headers, $body);
     }
 }

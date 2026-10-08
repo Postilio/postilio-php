@@ -29,7 +29,7 @@ final class ApiKeyMonthUsage
      */
     public static function fromArray(array $data): self
     {
-        return new self(
+        $fields = [
             Json::string($data, 'id'),
             Json::int($data, 'accepted'),
             Json::int($data, 'sent'),
@@ -37,6 +37,8 @@ final class ApiKeyMonthUsage
             Json::int($data, 'delivered'),
             Json::int($data, 'bounced'),
             Json::int($data, 'complained'),
-        );
+        ];
+
+        return new self(...$fields);
     }
 }

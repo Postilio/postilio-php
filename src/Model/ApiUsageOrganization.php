@@ -26,9 +26,11 @@ final class ApiUsageOrganization
      */
     public static function fromArray(array $data): self
     {
-        return new self(
+        $fields = [
             Json::nullableString($data, 'plan'),
             Json::nullableEnum($data, 'state', UsageState::class),
-        );
+        ];
+
+        return new self(...$fields);
     }
 }

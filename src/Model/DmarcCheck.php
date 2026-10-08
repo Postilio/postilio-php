@@ -33,11 +33,13 @@ final class DmarcCheck
      */
     public static function fromArray(array $data): self
     {
-        return new self(
+        $fields = [
             Json::enum($data, 'status', DmarcStatus::class),
             Json::nullableString($data, 'policyDomain'),
             Json::strings($data, 'records'),
             Json::strings($data, 'issues'),
-        );
+        ];
+
+        return new self(...$fields);
     }
 }

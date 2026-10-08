@@ -25,9 +25,11 @@ final class RotatedWebhookSecret
      */
     public static function fromArray(array $data): self
     {
-        return new self(
+        $fields = [
             Json::string($data, 'secret'),
             Json::dateTime($data, 'previousSecretExpiresAt'),
-        );
+        ];
+
+        return new self(...$fields);
     }
 }

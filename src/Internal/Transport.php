@@ -10,5 +10,5 @@ use Postilio\Exception\TransportException;
 interface Transport
 {
     /** @throws TransportException No answer came. */
-    public function send(HttpRequest $request): HttpResponse;
+    public function send(#[\SensitiveParameter] HttpRequest $request): HttpResponse;
 }

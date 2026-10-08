@@ -40,7 +40,7 @@ final class DomainResponse
      */
     public static function fromArray(array $data): self
     {
-        return new self(
+        $fields = [
             Json::string($data, 'id'),
             Json::string($data, 'name'),
             Json::enum($data, 'status', DomainStatus::class),
@@ -51,6 +51,8 @@ final class DomainResponse
             Json::nullableDateTime($data, 'failingSince'),
             Json::int($data, 'sent30d'),
             ($v = Json::nullableObject($data, 'dmarc')) === null ? null : DmarcCheck::fromArray($v),
-        );
+        ];
+
+        return new self(...$fields);
     }
 }

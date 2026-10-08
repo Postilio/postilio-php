@@ -41,7 +41,7 @@ final class EmailDetails
      */
     public static function fromArray(array $data): self
     {
-        return new self(
+        $fields = [
             Json::string($data, 'id'),
             Json::enum($data, 'status', EmailStatus::class),
             Json::string($data, 'from'),
@@ -53,6 +53,8 @@ final class EmailDetails
             Json::objects($data, 'events', EmailEvent::fromArray(...)),
             Json::string($data, 'via'),
             Json::nullableDateTime($data, 'sendAt'),
-        );
+        ];
+
+        return new self(...$fields);
     }
 }

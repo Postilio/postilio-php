@@ -116,9 +116,13 @@ final class PostilioClient
         }
         $this->apiKey = $apiKey;
         $this->baseUrl = rtrim($baseUrl, '/');
-        $this->transport = $httpClient === null
-            ? new CurlTransport($timeout, $connectTimeout)
-            : new Psr18Transport($httpClient, $requestFactory ?? self::discoverRequestFactory(), $streamFactory ?? self::discoverStreamFactory());
+        if ($httpClient === null) {
+            $this->transport = new CurlTransport($timeout, $connectTimeout);
+        } else {
+            $requestFactory ??= self::discoverRequestFactory();
+            $streamFactory ??= self::discoverStreamFactory();
+            $this->transport = new Psr18Transport($httpClient, $requestFactory, $streamFactory);
+        }
         $this->sleep = $sleep ?? static function (float $seconds): void {
             usleep((int) round($seconds * 1_000_000));
         };
@@ -327,7 +331,8 @@ final class PostilioClient
         if ($idempotencyKey !== null) {
             $headers['Idempotency-Key'] = $idempotencyKey;
         }
-        $request = new HttpRequest($method, $this->baseUrl . $path, $headers, $body === null ? null : Json::encode($body));
+        $json = $body === null ? null : Json::encode($body);
+        $request = new HttpRequest($method, $this->baseUrl . $path, $headers, $json);
         // Sending again cannot do anything twice: a read, or a send the server recognises by its Idempotency-Key.
         $replayable = $method === 'GET' || ($method === 'POST' && $idempotencyKey !== null);
         $call = $method . ' ' . explode('?', $path, 2)[0];

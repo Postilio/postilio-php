@@ -38,7 +38,7 @@ final class HttpValidationProblemDetails
             $errors[(string) $field] = Json::strings(Json::object($data, 'errors'), (string) $field);
         }
 
-        return new self(
+        $fields = [
             Json::nullableString($data, 'type'),
             Json::nullableString($data, 'title'),
             Json::nullableInt($data, 'status'),
@@ -46,6 +46,8 @@ final class HttpValidationProblemDetails
             Json::nullableString($data, 'instance'),
             $errors,
             Json::nullableString($data, 'traceId'),
-        );
+        ];
+
+        return new self(...$fields);
     }
 }

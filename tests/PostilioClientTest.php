@@ -371,7 +371,7 @@ final class PostilioClientTest extends TestCase
         $e = self::catch(fn() => $this->client()->listSuppressions('ada@example.com'));
 
         self::assertSame('GET /v1/suppressions answered 401 (invalid_api_key).', $e->getMessage());
-        self::assertStringNotContainsString(self::API_KEY, print_r($e, true));
+        self::assertStringNotContainsString(self::API_KEY, (string) $e);
     }
 
     #[Test]

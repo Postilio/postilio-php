@@ -29,9 +29,11 @@ final class SendEmailResponse
      */
     public static function fromArray(array $data): self
     {
-        return new self(
+        $fields = [
             Json::strings($data, 'ids'),
             Json::strings($data, 'suppressed'),
-        );
+        ];
+
+        return new self(...$fields);
     }
 }

@@ -43,7 +43,7 @@ final class WebhookEndpointResponse
      */
     public static function fromArray(array $data): self
     {
-        return new self(
+        $fields = [
             Json::string($data, 'id'),
             Json::string($data, 'url'),
             Json::nullableString($data, 'description'),
@@ -57,6 +57,8 @@ final class WebhookEndpointResponse
             Json::nullableDateTime($data, 'previousSecretExpiresAt'),
             Json::dateTime($data, 'createdAt'),
             ($v = Json::nullableObject($data, 'lastDelivery')) === null ? null : WebhookLastDelivery::fromArray($v),
-        );
+        ];
+
+        return new self(...$fields);
     }
 }

@@ -30,13 +30,15 @@ final class SuppressionResponse
      */
     public static function fromArray(array $data): self
     {
-        return new self(
+        $fields = [
             Json::string($data, 'id'),
             Json::string($data, 'address'),
             Json::enum($data, 'reason', SuppressionReason::class),
             Json::nullableString($data, 'detail'),
             Json::nullableString($data, 'sourceMessageId'),
             Json::dateTime($data, 'createdAt'),
-        );
+        ];
+
+        return new self(...$fields);
     }
 }

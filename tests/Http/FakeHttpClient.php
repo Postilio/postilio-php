@@ -6,7 +6,6 @@ namespace Postilio\Tests\Http;
 
 use Nyholm\Psr7\Response;
 use Psr\Http\Client\ClientInterface;
-use Psr\Http\Client\NetworkExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -37,19 +36,9 @@ final class FakeHttpClient implements ClientInterface
         return $this;
     }
 
-    public function failNetwork(RequestInterface $request = new \Nyholm\Psr7\Request('GET', 'https://api.postilio.eu/')): self
+    public function failNetwork(): self
     {
-        return $this->fail(new class ('Connection refused', $request) extends \RuntimeException implements NetworkExceptionInterface {
-            public function __construct(string $message, private readonly RequestInterface $request)
-            {
-                parent::__construct($message);
-            }
-
-            public function getRequest(): RequestInterface
-            {
-                return $this->request;
-            }
-        });
+        return $this->fail(new NetworkFailure('Connection refused'));
     }
 
     public function sendRequest(RequestInterface $request): ResponseInterface
