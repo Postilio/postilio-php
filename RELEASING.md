@@ -44,16 +44,16 @@ released.
 
 ## Continuous integration
 
-There is no workflow in this repository yet; whether to add one is the owner's decision, since Actions minutes cost
-money for private repositories. A workflow for this repository would, on every pull request and push to `main`:
+The `build` workflow (`.github/workflows/build.yml`) runs on every pull request and push to `main`:
 
 | Job | Steps |
 |---|---|
-| `build` (PHP 8.4, ubuntu-latest) | checkout, `shivammathur/setup-php` with `curl` and `pcov`, `./build.sh` |
-| `test` (matrix PHP 8.2, 8.3, 8.4, 8.5) | checkout, setup-php, `composer update --no-interaction`, `vendor/bin/phpunit --exclude-group contract` |
-| `lowest` (PHP 8.2) | as `test`, with `composer update --prefer-lowest` |
-| `mutation` (PHP 8.4, optional) | `composer mutation` with a minimum covered MSI of 95 % |
+| `build` (PHP 8.4) | `./build.sh`: package metadata, code style, static analysis, the tests, the examples and the package contents |
+| `test` (matrix PHP 8.2, 8.3, 8.4, 8.5, plus 8.2 with `--prefer-lowest`) | `composer update`, `vendor/bin/phpunit --exclude-group contract`, the examples |
 
-Actions pinned to a commit SHA, with the version as a comment. The contract tests stay out of CI: they need a running
-Postilio and a test key. A release workflow is not needed: Packagist reads the tag. Never attach a self-hosted runner
-to a public repository: a pull request from a fork would run its code on that machine.
+The contract tests stay out of CI: they need a running Postilio and a test key. Mutation testing stays local, since
+GitHub Actions minutes cost money. There is no release workflow: Packagist reads the tag. `.github/` is
+`export-ignore`d, so the workflows are not in the package. Actions are pinned to a commit hash with the version as a
+comment; to bump one, take the commit of the new tag (`gh api repos/<owner>/<action>/commits/<tag> --jq .sha`) and let
+a release be a few days old first. Never attach a self-hosted runner to a public repository: a pull request from a
+fork would run its code on that machine.
