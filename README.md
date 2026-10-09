@@ -172,7 +172,9 @@ Models are immutable: readonly properties, a public constructor (handy in your o
 
 ## Domains, suppressions, webhooks and usage
 
-These need a live key with the matching scope (`domains:manage`, `suppressions:manage`, `webhooks:manage`, `usage:read`).
+These need a key with the matching scope (`domains:manage`, `suppressions:manage`, `webhooks:manage`, `usage:read`), and
+a live key for all but reading domains: `listDomains()` and `getDomain()` need only `domains:read` (which `domains:manage`
+includes) and also work with a test key, for code that only shows a sender domain's status.
 
 ```php
 $domain = $postilio->createDomain(new CreateDomainRequest('mail.example.com'));

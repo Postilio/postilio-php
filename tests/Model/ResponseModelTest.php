@@ -116,6 +116,18 @@ final class ResponseModelTest extends TestCase
     }
 
     #[Test]
+    public function emailEventReadsABounceAfterDelivery(): void
+    {
+        $event = EmailEvent::fromArray(['type' => 'bounced', 'occurredAt' => '2026-10-05T16:28:57Z', 'smtpCode' => 550,
+            'response' => '550 5.1.1 user unknown', 'enhancedCode' => '5.1.1', 'classification' => 'InvalidRecipient',
+            'reason' => 'async_bounce', 'async' => true]);
+
+        self::assertSame(EmailEventReason::AsyncBounce, $event->reason);
+        self::assertTrue($event->async);
+        self::assertNull($event->attempt);
+    }
+
+    #[Test]
     public function domainResponseReadsTheDocsExampleOfANewDomain(): void
     {
         self::assertEquals(
@@ -322,6 +334,7 @@ final class ResponseModelTest extends TestCase
 
         yield 'a string for an integer' => [static fn() => DomainResponse::fromArray(['sent30d' => '0'] + $domain), 'sent30d'];
         yield 'a string for a boolean' => [static fn() => EmailDetails::fromArray(['test' => 'yes'] + $email), 'test'];
+        yield 'a string for a nullable boolean' => [static fn() => EmailEvent::fromArray(['type' => 'bounced', 'occurredAt' => '2026-10-05T16:28:57Z', 'smtpCode' => null, 'response' => null, 'async' => 'yes']), 'async'];
         yield 'a required date missing' => [static fn() => EmailDetails::fromArray(array_diff_key($email, ['acceptedAt' => 1])), 'acceptedAt'];
         yield 'words for a date' => [static fn() => ApiUsage::fromArray(['resetsAt' => 'next month'] + $usage), 'resetsAt'];
         yield 'a date without an offset' => [static fn() => ApiUsage::fromArray(['resetsAt' => '2026-11-01T00:00:00'] + $usage), 'resetsAt'];

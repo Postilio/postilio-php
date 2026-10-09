@@ -370,7 +370,7 @@
           "Domains"
         ],
         "summary": "List sending domains",
-        "description": "Needs the `domains:manage` scope.",
+        "description": "Needs the `domains:read` or `domains:manage` scope.",
         "operationId": "ListDomains",
         "responses": {
           "200": {
@@ -392,7 +392,7 @@
           "Domains"
         ],
         "summary": "Get a sending domain",
-        "description": "Needs the `domains:manage` scope.",
+        "description": "Needs the `domains:read` or `domains:manage` scope.",
         "operationId": "GetDomain",
         "parameters": [
           {
@@ -1567,6 +1567,11 @@
           "reason": {
             "type": "string",
             "description": "Why the attempt was delayed or failed, as a stable code (see Delivery status in the docs), such as `tls_certificate_invalid`, `mailbox_full` or `recipient_server_temporary`; null when there is nothing to explain.",
+            "nullable": true
+          },
+          "async": {
+            "type": "boolean",
+            "description": "True for a report that arrived after delivery: a bounce the recipient's mail server sent later (reason `async_bounce`); null otherwise.",
             "nullable": true
           }
         }

@@ -54,6 +54,17 @@ final class WebhookEventTest extends TestCase
     }
 
     #[Test]
+    public function parseReadsABounceAfterDelivery(): void
+    {
+        $event = WebhookEvent::parse('{"type":"email.bounced.v1","timestamp":"2026-10-03T14:07:45+00:00","data":'
+            . '{"emailId":"0199a7c4-5a1e-7d2b-9c41-6f3e0b8a2d17","test":false,"event":"bounced","reason":"async_bounce","async":true}}');
+
+        self::assertSame(EmailEventReason::AsyncBounce, $event->data->reason);
+        self::assertTrue($event->data->async);
+        self::assertNull($event->data->remoteHost);
+    }
+
+    #[Test]
     public function parseReadsTheSendAtOfAScheduledMessage(): void
     {
         $event = WebhookEvent::parse('{"type":"email.scheduled.v1","timestamp":"2026-10-03T14:07:45+00:00","data":'

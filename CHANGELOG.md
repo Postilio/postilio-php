@@ -6,6 +6,17 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+Follows the `/v1` document with fingerprint `86f477f7f728d5f5416c43ad347d8912f029809998e2c79c229e26433185d0dd`.
+
+### Added
+
+- `EmailEvent::$async` and `WebhookEventData::$async`: true for a bounce the recipient's mail server reported after
+  delivery, which follows the `delivered` event; `EmailEventReason::AsyncBounce` is its reason.
+
+### Changed
+
+- `listDomains()` and `getDomain()` need the new `domains:read` scope or `domains:manage`, and work with a test key.
+
 ## [0.1.0-alpha.1]
 
 First version, against the alpha of the Postilio API (`/v1`, OpenAPI fingerprint

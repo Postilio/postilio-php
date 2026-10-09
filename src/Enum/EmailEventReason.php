@@ -57,6 +57,9 @@ enum EmailEventReason: string
     /** We couldn't deliver this message. */
     case UnknownPermanent = 'unknown_permanent';
 
+    /** the recipient's mail server accepted the message and reported later that it could not deliver it. */
+    case AsyncBounce = 'async_bounce';
+
     /** you canceled it (DELETE /v1/emails/{id}, or in the portal). */
     case CanceledByRequest = 'canceled_by_request';
 
