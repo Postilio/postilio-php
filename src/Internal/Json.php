@@ -76,6 +76,14 @@ final class Json
     }
 
     /** @param array<mixed> $data */
+    public static function nullableBool(array $data, string $key): ?bool
+    {
+        $value = $data[$key] ?? null;
+
+        return $value === null || \is_bool($value) ? $value : throw self::invalid($key, 'true, false or null');
+    }
+
+    /** @param array<mixed> $data */
     public static function dateTime(array $data, string $key): \DateTimeImmutable
     {
         return self::nullableDateTime($data, $key) ?? throw self::invalid($key, 'a date and time');

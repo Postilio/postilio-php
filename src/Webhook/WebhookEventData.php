@@ -35,6 +35,8 @@ final class WebhookEventData
         public readonly ?string $remoteHost = null,
         /** For a scheduled message: when it goes out. */
         public readonly ?\DateTimeImmutable $sendAt = null,
+        /** True for a bounce that arrived after delivery (reason `async_bounce`); it can follow a delivered event. */
+        public readonly ?bool $async = null,
     ) {}
 
     /**
@@ -61,6 +63,7 @@ final class WebhookEventData
             Json::nullableString($data, 'response'),
             Json::nullableString($data, 'remoteHost'),
             Json::nullableDateTime($data, 'sendAt'),
+            Json::nullableBool($data, 'async'),
         );
     }
 }

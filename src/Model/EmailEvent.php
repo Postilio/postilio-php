@@ -24,6 +24,8 @@ final class EmailEvent
         public readonly ?string $classification,
         /** Why the attempt was delayed or failed, as a stable code such as `mailbox_full`. */
         public readonly EmailEventReason|string|null $reason,
+        /** True for a bounce that arrived after delivery (reason `async_bounce`); null otherwise. */
+        public readonly ?bool $async = null,
     ) {}
 
     /**
@@ -45,6 +47,7 @@ final class EmailEvent
             Json::nullableString($data, 'enhancedCode'),
             Json::nullableString($data, 'classification'),
             Json::nullableEnum($data, 'reason', EmailEventReason::class),
+            Json::nullableBool($data, 'async'),
         );
     }
 }

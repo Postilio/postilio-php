@@ -176,13 +176,16 @@ final class PostilioClient
         return $this->call('POST', '/v1/domains', $request->toArray(), read: DomainResponse::fromArray(...));
     }
 
-    /** Lists the project's sending domains. Needs `domains:manage`. */
+    /** Lists the project's sending domains. Needs `domains:read` or `domains:manage`; works with a test key. */
     public function listDomains(): DomainList
     {
         return $this->call('GET', '/v1/domains', read: DomainList::fromArray(...));
     }
 
-    /** Gets a sending domain with its records and DMARC check. Needs `domains:manage`. */
+    /**
+     * Gets a sending domain with its records and DMARC check. Needs `domains:read` or `domains:manage`; works with a
+     * test key.
+     */
     public function getDomain(string $id): DomainResponse
     {
         return $this->call('GET', '/v1/domains/' . self::segment($id), read: DomainResponse::fromArray(...));
