@@ -6,16 +6,20 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-Follows the `/v1` document with fingerprint `86f477f7f728d5f5416c43ad347d8912f029809998e2c79c229e26433185d0dd`.
+Follows the `/v1` document with fingerprint `b0793fcb17cf6bead36c6e703c4d3da3a3171ba5e4076495a55c62cc950ee881`.
 
 ### Added
 
 - `EmailEvent::$async` and `WebhookEventData::$async`: true for a bounce the recipient's mail server reported after
   delivery, which follows the `delivered` event; `EmailEventReason::AsyncBounce` is its reason.
+- `ErrorCode::AttachmentTypeNotAllowed` (422, an executable attachment), `ErrorCode::ProbationDailyLimitReached` and
+  `ErrorCode::ProbationRateLimitReached` (429, the caps in the first weeks after the sandbox).
 
 ### Changed
 
 - `listDomains()` and `getDomain()` need the new `domains:read` scope or `domains:manage`, and work with a test key.
+- `sendAt` is a `date-time` in the document now, which `SendEmailRequest::$sendAt` already accepted; a time without
+  an offset is refused with a 400. The client sends what it sent before.
 
 ## [0.1.0-alpha.1]
 
