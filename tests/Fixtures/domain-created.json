@@ -11,5 +11,6 @@
   "addedBy": null,
   "failingSince": null,
   "sent30d": 0,
-  "dmarc": null
+  "dmarc": null,
+  "platformKey": { "type": "TXT", "name": "pst202610.ft6sub3lbo.dkim.postilio.eu", "status": "publishing" }
 }

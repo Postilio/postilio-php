@@ -16,5 +16,6 @@
     "policyDomain": "mail.example.com",
     "records": ["v=DMARC1; p=none"],
     "issues": ["no_reports"]
-  }
+  },
+  "platformKey": { "type": "TXT", "name": "pst202610.ft6sub3lbo.dkim.postilio.eu", "status": "published" }
 }

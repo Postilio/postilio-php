@@ -1369,7 +1369,8 @@
           "addedBy",
           "failingSince",
           "sent30d",
-          "dmarc"
+          "dmarc",
+          "platformKey"
         ],
         "type": "object",
         "properties": {
@@ -1425,6 +1426,19 @@
               },
               {
                 "$ref": "#/components/schemas/DmarcCheck"
+              }
+            ]
+          },
+          "platformKey": {
+            "oneOf": [
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              },
+              {
+                "$ref": "#/components/schemas/PlatformKeyRecord"
               }
             ]
           }
@@ -1625,6 +1639,26 @@
                 "type": "string"
               }
             }
+          }
+        }
+      },
+      "PlatformKeyRecord": {
+        "required": [
+          "type",
+          "name",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "description": "published (found in DNS at the last check), publishing (Postilio is publishing it, or it is not checked\n    yet), failed (publishing it keeps failing; Postilio is on it) or manual (this installation publishes it by hand)."
           }
         }
       },

@@ -29,6 +29,8 @@ final class DomainResponse
         public readonly int $sent30d,
         /** Null until the first check. */
         public readonly ?DmarcCheck $dmarc,
+        /** The DKIM key record Postilio publishes for the domain; a pending domain whose own records are found waits for it. */
+        public readonly ?PlatformKeyRecord $platformKey,
     ) {}
 
     /**
@@ -51,6 +53,7 @@ final class DomainResponse
             Json::nullableDateTime($data, 'failingSince'),
             Json::int($data, 'sent30d'),
             ($v = Json::nullableObject($data, 'dmarc')) === null ? null : DmarcCheck::fromArray($v),
+            ($v = Json::nullableObject($data, 'platformKey')) === null ? null : PlatformKeyRecord::fromArray($v),
         );
     }
 }

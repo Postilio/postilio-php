@@ -12,6 +12,7 @@ use Postilio\Enum\DnsRecordStatus;
 use Postilio\Enum\DomainStatus;
 use Postilio\Enum\EmailEventReason;
 use Postilio\Enum\EmailStatus;
+use Postilio\Enum\PlatformKeyStatus;
 use Postilio\Enum\SuppressionReason;
 use Postilio\Enum\UsageState;
 use Postilio\Enum\WebhookDeliveryStatus;
@@ -30,6 +31,7 @@ use Postilio\Model\EmailDetails;
 use Postilio\Model\EmailEvent;
 use Postilio\Model\ErrorResponse;
 use Postilio\Model\HttpValidationProblemDetails;
+use Postilio\Model\PlatformKeyRecord;
 use Postilio\Model\RotatedWebhookSecret;
 use Postilio\Model\SendEmailResponse;
 use Postilio\Model\SuppressionList;
@@ -145,6 +147,7 @@ final class ResponseModelTest extends TestCase
                 failingSince: null,
                 sent30d: 0,
                 dmarc: null,
+                platformKey: new PlatformKeyRecord('TXT', 'pst202610.ft6sub3lbo.dkim.postilio.eu', PlatformKeyStatus::Publishing),
             ),
             DomainResponse::fromArray(Fixtures::json('domain-created.json')),
         );
@@ -161,6 +164,17 @@ final class ResponseModelTest extends TestCase
         self::assertSame('Ada Lovelace', $list->data[0]->addedBy);
         self::assertSame(1250, $list->data[0]->sent30d);
         self::assertEquals(new DmarcCheck(DmarcStatus::Monitoring, 'mail.example.com', ['v=DMARC1; p=none'], ['no_reports']), $list->data[0]->dmarc);
+        self::assertSame(PlatformKeyStatus::Published, $list->data[0]->platformKey?->status);
+    }
+
+    #[Test]
+    public function domainResponseReadsAMissingPlatformKeyAndKeepsAnUnknownStatus(): void
+    {
+        $data = Fixtures::json('domain-created.json');
+        self::assertNull(DomainResponse::fromArray(['platformKey' => null] + $data)->platformKey);
+
+        $data = ['platformKey' => ['type' => 'TXT', 'name' => 'k.dkim.postilio.eu', 'status' => 'retired']] + $data;
+        self::assertSame('retired', DomainResponse::fromArray($data)->platformKey?->status);
     }
 
     #[Test]
