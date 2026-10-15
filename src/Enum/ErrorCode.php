@@ -79,6 +79,9 @@ enum ErrorCode: string
     /** 422: `sendAt` is more than 30 days ahead. */
     case SendAtTooFar = 'send_at_too_far';
 
+    /** 422: an attachment is an executable file, such as `.exe` or `.js`; the message names it, see Attachments. */
+    case AttachmentTypeNotAllowed = 'attachment_type_not_allowed';
+
     /** 422: `cc` or `bcc` with more than one address in `to`, see Cc and Bcc. */
     case CcBccRequireSingleTo = 'cc_bcc_require_single_to';
 
@@ -93,6 +96,12 @@ enum ErrorCode: string
 
     /** 429: in the sandbox: this minute's recipients are used up. */
     case SandboxRateLimitReached = 'sandbox_rate_limit_reached';
+
+    /** 429: in the first weeks after the sandbox: the day's recipients are used up. */
+    case ProbationDailyLimitReached = 'probation_daily_limit_reached';
+
+    /** 429: in the first weeks after the sandbox: this minute's recipients are used up. */
+    case ProbationRateLimitReached = 'probation_rate_limit_reached';
 
     /** 429: the project's own limit: the day's recipients are used up. */
     case ProjectDailyLimitReached = 'project_daily_limit_reached';
