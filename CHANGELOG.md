@@ -6,7 +6,7 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-Follows the `/v1` document with fingerprint `b0793fcb17cf6bead36c6e703c4d3da3a3171ba5e4076495a55c62cc950ee881`.
+Follows the `/v1` document with fingerprint `cdec48841de28808b550091e583aa44c61f8e4334d72bd2066f919a87c5cf1fa`.
 
 ### Added
 
@@ -14,6 +14,9 @@ Follows the `/v1` document with fingerprint `b0793fcb17cf6bead36c6e703c4d3da3a31
   delivery, which follows the `delivered` event; `EmailEventReason::AsyncBounce` is its reason.
 - `ErrorCode::AttachmentTypeNotAllowed` (422, an executable attachment), `ErrorCode::ProbationDailyLimitReached` and
   `ErrorCode::ProbationRateLimitReached` (429, the caps in the first weeks after the sandbox).
+- `DomainResponse::$platformKey` (`PlatformKeyRecord`, null when there is none): the DKIM key record Postilio publishes
+  itself, which a domain's DKIM CNAME points to, with its `PlatformKeyStatus` (`published`, `publishing`, `failed`,
+  `manual`). A pending domain whose own records are found waits for this one.
 
 ### Changed
 

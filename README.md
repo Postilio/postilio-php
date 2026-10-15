@@ -182,6 +182,8 @@ foreach ($domain->records as $record) {
     echo "{$record->type} {$record->name} → {$record->value}\n";
 }
 $domain = $postilio->checkDomain($domain->id); // once DNS is in place; $domain->dmarc holds the DMARC check
+// Postilio publishes the record your DKIM CNAME points to itself; a pending domain whose own records are found waits for it
+if ($domain->platformKey?->status === PlatformKeyStatus::Failed) { /* Postilio's team is on it; nothing to do on your side */ }
 
 $page = $postilio->listSuppressions(reason: SuppressionReason::HardBounce, limit: 100);
 while ($page->next !== null) {
