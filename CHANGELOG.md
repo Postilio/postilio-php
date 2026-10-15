@@ -6,34 +6,23 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-Follows the `/v1` document with fingerprint `cdec48841de28808b550091e583aa44c61f8e4334d72bd2066f919a87c5cf1fa`.
-
-### Added
-
-- `EmailEvent::$async` and `WebhookEventData::$async`: true for a bounce the recipient's mail server reported after
-  delivery, which follows the `delivered` event; `EmailEventReason::AsyncBounce` is its reason.
-- `ErrorCode::AttachmentTypeNotAllowed` (422, an executable attachment), `ErrorCode::ProbationDailyLimitReached` and
-  `ErrorCode::ProbationRateLimitReached` (429, the caps in the first weeks after the sandbox).
-- `DomainResponse::$platformKey` (`PlatformKeyRecord`, null when there is none): the DKIM key record Postilio publishes
-  itself, which a domain's DKIM CNAME points to, with its `PlatformKeyStatus` (`published`, `publishing`, `failed`,
-  `manual`). A pending domain whose own records are found waits for this one.
-
-### Changed
-
-- `listDomains()` and `getDomain()` need the new `domains:read` scope or `domains:manage`, and work with a test key.
-- `sendAt` is a `date-time` in the document now, which `SendEmailRequest::$sendAt` already accepted; a time without
-  an offset is refused with a 400. The client sends what it sent before.
-
-## [0.1.0-alpha.1]
+## [0.1.0-alpha.1] - 2026-10-15
 
 First version, against the alpha of the Postilio API (`/v1`, OpenAPI fingerprint
-`6b72ff75628f6b8ee9b7cd3abc65cf5be7bec0037c5e94c7e7e8350684c73ed3`).
+`cdec48841de28808b550091e583aa44c61f8e4334d72bd2066f919a87c5cf1fa`).
 
 ### Added
 
 - `PostilioClient` with a method per operation of `/v1`: send email (cc, bcc, headers such as `List-Unsubscribe`,
   attachments, scheduled sending), cancel a scheduled email, send a test email, get an email with its events, domains
   with their DMARC check, suppressions, webhook endpoints and deliveries, and usage.
+- Domains with their DMARC check and `platformKey`, the DKIM key record Postilio publishes itself (`PlatformKeyRecord`
+  with a `PlatformKeyStatus`). `listDomains()` and `getDomain()` need only the `domains:read` scope (which
+  `domains:manage` includes) and work with a test key.
+- `EmailEvent::$async` and `WebhookEventData::$async`: true for a bounce the recipient's mail server reported after
+  delivery, which follows the `delivered` event; `EmailEventReason::AsyncBounce` is its reason.
+- `sendAt` takes a `DateTimeInterface` (sent with its offset) or an ISO 8601 string; a time without an offset is refused
+  by the API with a 400.
 - An `Idempotency-Key` on every send, made per call unless you pass your own.
 - Any PSR-18 client with PSR-17 factories (found by php-http/discovery when installed and left out), or a built-in curl
   transport with timeouts, no redirects and HTTP(S) only. No other dependencies, no global state.
